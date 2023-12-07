@@ -1,5 +1,7 @@
 import express from "express";
+import connectdb from "./config/connectdb.js";
 const app = express();
+connectdb();
 app.get("/", (req, res) => {
   res.send("hello");
 });
