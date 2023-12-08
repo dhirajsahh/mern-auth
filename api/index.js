@@ -10,3 +10,12 @@ app.use("/api/auth", authRoutes);
 app.listen(3000, () => {
   console.log("app is listening in port 3000");
 });
+app.use((err, req, res, next) => {
+  const statusCode = err.statusCode || 500;
+  const message = err.messsage || "Internal server error";
+  return res.status(statusCode).json({
+    success: false,
+    error: message,
+    statusCode,
+  });
+});
