@@ -6,12 +6,13 @@ import {
   signInStart,
   signInSuccess,
 } from "../redux/user/userSlice";
+import OAuth from "../components/OAuth";
 const SignIn = () => {
   const [formdata, setFormdata] = useState({});
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { loading, message } = useSelector((state) => state.user);
+  const { loading } = useSelector((state) => state.user);
 
   const handleChange = (e) => {
     setFormdata({ ...formdata, [e.target.id]: e.target.value });
@@ -28,8 +29,8 @@ const SignIn = () => {
     dispatch(signInStart());
     const data = await res.json();
     if (data._id) {
-      dispatch(signInSuccess(data));
       navigate("/");
+      dispatch(signInSuccess(data));
     } else {
       dispatch(signInFailure(data));
     }
@@ -55,8 +56,9 @@ const SignIn = () => {
         <button className="bg-slate-700 text-white rounded-lg p-3 uppercase hover:opacity-95 disabled:opacity-80">
           {loading ? "loading..." : "SignIn"}
         </button>
+        <OAuth />
       </form>
-      <p className="text-red-500">{message}</p>
+      {/* <p className="text-red-500">{message}</p> */}
       <div className="flex gap-2 mt-5">
         <p>Dont Have an Account?</p>
 
