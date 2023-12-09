@@ -57,3 +57,45 @@ export const signin = async (req, res) => {
     });
   }
 };
+
+export const google = async (req, res) => {
+  const { email, name, photo } = req.body;
+  console.log(email, name, photo);
+  try {
+    let user = await User.findOne({ email: email });
+
+    if (user) {
+      user.password = undefined;
+      const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+      return res
+        .cookie("access_token", token, { httpOnly: true, maxAge: 3600 * 1000 })
+        .status(200)
+        .json(user);
+    } else {
+      const generatedpassword =
+        Math.random().toString(36).slice(-8) +
+        Math.random().toString(36).slice(-8);
+
+      const hashedPassword = bcryptjs.hashSync(generatedpassword, 10);
+      const newUser = await User.create({
+        username: name,
+        email,
+        password: hashedPassword,
+        profilePicture: photo,
+      });
+
+      const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET);
+      newUser.password = undefined;
+      return res
+        .cookie("access_token", token, { httpOnly: true, maxAge: 3600 * 1000 })
+        .status(200)
+        .json(newUser);
+    }
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Error occured during login with goole",
+      error: error.message,
+    });
+  }
+};
