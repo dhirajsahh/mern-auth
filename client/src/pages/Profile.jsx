@@ -1,16 +1,27 @@
-import React from "react";
+import { useRef, useState } from "react";
 import { useSelector } from "react-redux";
 const Profile = () => {
+  const fileRef = useRef(null);
+  const [image, setImage] = useState(undefined);
   const { currentUser } = useSelector((state) => state.user);
   return (
     <div className="p-3 max-w-lg mx-auto">
       <h1 className="text-3xl font-semibold text-center my-7">Profile</h1>
       <form className="flex flex-col gap-5">
+        <input
+          type="file"
+          ref={fileRef}
+          hidden
+          accept="image/*"
+          onChange={(e) => setImage(e.target.files[0])}
+        />
         <img
           src={currentUser.profilePicture}
           alt="ProfilePicture"
           className="h-24 w-24 self-center cursor-pointer rounded-full object-cover mt-2"
+          onClick={() => fileRef.current.click()}
         />
+        {console.log(image)}
         <input
           defaultValue={currentUser.username}
           type="text"
