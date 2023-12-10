@@ -14,7 +14,7 @@ import {
 } from "firebase/storage";
 import { app } from "../firebase";
 const Profile = () => {
-  const navigate = useNavigate;
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const { currentUser } = useSelector((state) => state.user);
   const fileRef = useRef(null);
@@ -83,8 +83,14 @@ const Profile = () => {
       console.log(error);
     }
   }
-  function handleSignOutUser() {
-    dispatch(signoutUser());
+  async function handleSignOutUser() {
+    try {
+      await fetch("/api/user/signout");
+      navigate("/sign-in");
+      dispatch(deleteUser());
+    } catch (error) {
+      console.log(error);
+    }
   }
   return (
     <div className="p-3 max-w-lg mx-auto">
