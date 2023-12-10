@@ -1,5 +1,10 @@
 import { useEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  signInFailure,
+  signInStart,
+  signInSuccess,
+} from "../redux/user/userSlice";
 import {
   getDownloadURL,
   getStorage,
@@ -8,12 +13,14 @@ import {
 } from "firebase/storage";
 import { app } from "../firebase";
 const Profile = () => {
+  const dispatch = useDispatch();
   const { currentUser } = useSelector((state) => state.user);
   const fileRef = useRef(null);
   const [image, setImage] = useState(undefined);
   const [imagePercent, setImagePercent] = useState(0);
   const [formData, setFormData] = useState({});
   const [imageError, setImageError] = useState(false);
+  const [message, setMessage] = useState(false);
 
   useEffect(() => {
     if (image) {
@@ -43,8 +50,23 @@ const Profile = () => {
       }
     );
   };
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
+    try {
+      const res = await fetch(`/api/user/update/${currentUser._id}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+      const data = await res.json();
+      dispatch(signInSuccess(data));
+      setMessage(true);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  function handleChange(e) {
+    setFormData({ ...formData, [e.target.id]: e.target.value });
   }
   return (
     <div className="p-3 max-w-lg mx-auto">
@@ -82,6 +104,7 @@ const Profile = () => {
           id="username"
           placeholder="Username"
           className="bg-slate-100 rounded-lg p-3"
+          onChange={handleChange}
         />
         <input
           defaultValue={currentUser.email}
@@ -89,12 +112,14 @@ const Profile = () => {
           id="email"
           placeholder="Email"
           className="bg-slate-100 rounded-lg p-3"
+          onChange={handleChange}
         />
         <input
           type="password"
           id="password"
           placeholder="Password"
           className="bg-slate-100 rounded-lg p-3"
+          onChange={handleChange}
         />
         <button className="bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-90">
           update
@@ -103,6 +128,9 @@ const Profile = () => {
           <span className="text-red-700 cursor-pointer">Delete Account</span>
           <span className="text-red-700 cursor-pointer">Sign out</span>
         </div>
+        <p className="text-green-700">
+          {message && "User is Updatd Successfully"}
+        </p>
       </form>
     </div>
   );
