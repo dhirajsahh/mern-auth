@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
-  signInFailure,
-  signInStart,
+  deleteUser,
   signInSuccess,
+  signoutUser,
 } from "../redux/user/userSlice";
+import { useNavigate } from "react-router-dom";
 import {
   getDownloadURL,
   getStorage,
@@ -13,6 +14,7 @@ import {
 } from "firebase/storage";
 import { app } from "../firebase";
 const Profile = () => {
+  const navigate = useNavigate;
   const dispatch = useDispatch();
   const { currentUser } = useSelector((state) => state.user);
   const fileRef = useRef(null);
@@ -67,6 +69,22 @@ const Profile = () => {
   }
   function handleChange(e) {
     setFormData({ ...formData, [e.target.id]: e.target.value });
+  }
+  async function handleDeleteUser() {
+    try {
+      await fetch(`/api/user/delete/${currentUser._id}`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+      dispatch(deleteUser());
+      navigate("/sign-up");
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  function handleSignOutUser() {
+    dispatch(signoutUser());
   }
   return (
     <div className="p-3 max-w-lg mx-auto">
@@ -125,8 +143,18 @@ const Profile = () => {
           update
         </button>
         <div className="flex justify-between">
-          <span className="text-red-700 cursor-pointer">Delete Account</span>
-          <span className="text-red-700 cursor-pointer">Sign out</span>
+          <span
+            className="text-red-700 cursor-pointer"
+            onClick={handleDeleteUser}
+          >
+            Delete Account
+          </span>
+          <span
+            className="text-red-700 cursor-pointer"
+            onClick={handleSignOutUser}
+          >
+            Sign out
+          </span>
         </div>
         <p className="text-green-700">
           {message && "User is Updatd Successfully"}

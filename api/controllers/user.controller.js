@@ -41,3 +41,24 @@ export const updateUser = async (req, res, next) => {
     });
   }
 };
+//deleteUser
+export const deleteUser = async (req, res, next) => {
+  if (req.user.id !== req.params.id) {
+    res.status(401).json({
+      success: false,
+      message: "You can Update only your account",
+    });
+  }
+  try {
+    const getuserdeleted = await User.findByIdAndDelete(req.user.id);
+    return res.status(200).json({
+      success: false,
+      message: "User Deleted successfully",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Error occured during deleting user",
+    });
+  }
+};

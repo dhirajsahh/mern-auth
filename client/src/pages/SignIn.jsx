@@ -9,10 +9,11 @@ import {
 import OAuth from "../components/OAuth";
 const SignIn = () => {
   const [formdata, setFormdata] = useState({});
+  const [userMessage, setUserMessage] = useState(false);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { loading } = useSelector((state) => state.user);
+  const { loading, message } = useSelector((state) => state.user);
 
   const handleChange = (e) => {
     setFormdata({ ...formdata, [e.target.id]: e.target.value });
@@ -53,7 +54,12 @@ const SignIn = () => {
           className="bg-slate-100 p-3 rounded-lg"
           onChange={handleChange}
         />
-        <button className="bg-slate-700 text-white rounded-lg p-3 uppercase hover:opacity-95 disabled:opacity-80">
+        <button
+          className="bg-slate-700 text-white rounded-lg p-3 uppercase hover:opacity-95 disabled:opacity-80"
+          onClick={() => {
+            setUserMessage(true);
+          }}
+        >
           {loading ? "loading..." : "SignIn"}
         </button>
         <OAuth />
@@ -66,6 +72,7 @@ const SignIn = () => {
           <span className="text-blue-500">SignUp</span>
         </Link>
       </div>
+      <p className="text-red-500">{userMessage && message}</p>
     </div>
   );
 };
