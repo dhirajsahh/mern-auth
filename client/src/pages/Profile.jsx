@@ -14,7 +14,6 @@ const Profile = () => {
   const [imagePercent, setImagePercent] = useState(0);
   const [formData, setFormData] = useState({});
   const [imageError, setImageError] = useState(false);
-  console.log(formData, imagePercent);
 
   useEffect(() => {
     if (image) {
@@ -70,7 +69,7 @@ const Profile = () => {
               Error Uploading image(file size should be less than 2MB)
             </span>
           ) : imagePercent > 0 && imagePercent < 100 ? (
-            <span className="text-slate-700">`Uplodaing {imagePercent}%`</span>
+            <span className="text-slate-700">Uplodaing {imagePercent}%</span>
           ) : imagePercent === 100 ? (
             <span className="text-green-700">Images uploaded successfully</span>
           ) : (
